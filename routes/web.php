@@ -23,4 +23,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('/users/{das}', 'UserController@show');
     $router->put('/users/{das}', 'UserController@update');
     $router->delete('/users/{das}', 'UserController@destroy');
+
+    $router->get('/articles/latest', ['as'=>'articles.latest', 'uses'=>'ArticleController@latest']);
 });
