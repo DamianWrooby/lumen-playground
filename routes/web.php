@@ -25,4 +25,5 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->delete('/users/{das}', 'UserController@destroy');
 
     $router->get('/articles/latest', ['as'=>'articles.latest', 'uses'=>'ArticleController@latest']);
+    $router->get('/articles/by-category/{categoryAlias}', ['as'=>'articles.category', 'uses'=>'ArticleController@category']);
 });
