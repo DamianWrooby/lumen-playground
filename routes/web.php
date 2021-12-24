@@ -26,4 +26,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     $router->get('/articles/latest', ['as'=>'articles.latest', 'uses'=>'ArticleController@latest']);
     $router->get('/articles/by-category/{categoryAlias}', ['as'=>'articles.category', 'uses'=>'ArticleController@category']);
+    $router->get('/articles/get/{id}', ['as'=>'articles.get', 'uses'=>'ArticleController@get']);
+    $router->post('/articles', ['as'=>'articles.store', 'uses'=>'ArticleController@store']);
+    // w obrębie danej metody (get, post itd.) ważne jest aby najpierw były podane ścieżki zdefiniowane, bez parametrów, a później z parametrami. Jeśli najpierw będą z parametrami to nie dojdziemy od tych bez parametrów
 });
