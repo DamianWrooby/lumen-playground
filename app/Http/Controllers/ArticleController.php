@@ -52,6 +52,8 @@ class ArticleController extends Controller
     }
 
     public function category($categoryAlias) {
+        // tutaj walidator nie widzi aliasu bo jest dodawany do ścieżki w urlu jako parametr
+
         return DB::table('articles')
         ->leftJoin('categories', 'categories.id', '=', 'articles.category_id')
         ->leftJoin('subcategories', 'subcategories.id', '=', 'articles.subcategory_id')
@@ -97,6 +99,8 @@ class ArticleController extends Controller
     }
 
     public function store(Request $request) {
+        // tutaj możemy skorzystać z walidatora bo wartości pól są przekazywane w body
+
         $this->validate($request, [
             'title' => 'required|min:5', // minimum 5 znaków
             'short_text' => 'required|min:10',
@@ -105,13 +109,61 @@ class ArticleController extends Controller
             'image_url' => 'required|min:5'
         ]);
 
-        DB::table('articles')
-            ->insert([
+        $newArticleId = DB::table('articles')
+            ->insertGetId([
+                'category_id' => intval($request->input('category_id')) > 0 ? $request->input('category_id') : null,
+                'subcategory_id' => intval($request->input('subcategory_id')) > 0 ? $request->input('subcategory_id') : null,
                 'title' => strip_tags($request->input('title')),
                 'short_text' => strip_tags($request->input('short_text')),
                 'long_text' => strip_tags($request->input('long_text')),
                 'publish_date' => strip_tags($request->input('publish_date')),
                 'image_url' => strip_tags($request->input('image_url')),
             ]);
+        
+            // return response()->json(['message' => 'Article created'], Response::HTTP_CREATED); // tutaj zwracamy tylko wiadomość i status 201
+            return $this->get($request, $newArticleId); // tutaj zwracamy od razu ten utworzony artykuł
+    }
+
+    public function edit(Request $request, $id) {
+        
+        $request['id'] = $id; // dobijamy do requesta id z urla, żeby można było zwalidować
+        
+        $this->validate($request, [
+            'id' => 'required|integer|min:1', // i teraz możemy zwalidować
+            'title' => 'required|min:5',
+            'short_text' => 'required|min:10',
+            'long_text' => 'required|min:10',
+            'publish_date' => 'required|date', 
+            'image_url' => 'required|min:5'
+        ]);
+
+        DB::table('articles')
+            ->where(['id' => $id]) //! tu musi być where, w przeciwnym wypadku poleci update na jakąś tabelę 
+            ->update([
+                'category_id' => intval($request->input('category_id')) > 0 ? $request->input('category_id') : null,
+                'subcategory_id' => intval($request->input('subcategory_id')) > 0 ? $request->input('subcategory_id') : null,
+                'title' => strip_tags($request->input('title')),
+                'short_text' => strip_tags($request->input('short_text')),
+                'long_text' => strip_tags($request->input('long_text')),
+                'publish_date' => strip_tags($request->input('publish_date')),
+                'image_url' => strip_tags($request->input('image_url')),
+            ]);
+        
+            return response()->json(['message' => 'Article updated'], Response::HTTP_OK);
+    }
+
+    public function delete(Request $request, $id) {
+
+        $request['id'] = $id;
+
+        $this->validate($request, [
+            'id' => 'required|integer|min:1'
+        ]);
+
+        DB::table('articles')
+        ->where(['id' => $id]) 
+        ->delete();
+
+        return response()->json(['message' => 'Article removed'], Response::HTTP_OK);
     }
 }
