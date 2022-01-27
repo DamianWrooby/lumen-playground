@@ -26,7 +26,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     $router->get('/articles/latest', ['as'=>'articles.latest', 'uses'=>'ArticleController@latest']);
     $router->get('/articles/by-category/{categoryAlias}', ['as'=>'articles.category', 'uses'=>'ArticleController@category']);
-    $router->get('/articles/get/{id}', ['as'=>'articles.get', 'uses'=>'ArticleController@get']);
+    $router->get('/articles/{id}', ['as'=>'articles.get', 'uses'=>'ArticleController@get']);
     $router->post('/articles', ['as'=>'articles.store', 'uses'=>'ArticleController@store']);
     $router->patch('/articles/{id}', ['as'=>'articles.edit', 'uses'=>'ArticleController@edit']);
     $router->delete('/articles/{id}', ['as'=>'articles.delete', 'uses'=>'ArticleController@delete']);
